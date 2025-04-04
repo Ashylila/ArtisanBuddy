@@ -27,7 +27,6 @@ public class ConfigWindow : Window, IDisposable
 
     public override void PreDraw()
     {
-        // Flags must be added or removed before Draw() is being called, or they won't apply
         if (Configuration.IsConfigWindowMovable)
         {
             Flags &= ~ImGuiWindowFlags.NoMove;
@@ -40,20 +39,18 @@ public class ConfigWindow : Window, IDisposable
 
     public override void Draw()
     {
-        // can't ref a property, so use a local copy
         var configValue = Configuration.ListId;
         ImGui.Text("Artisan List ID:");
         if (ImGui.InputInt("##ArtisanListID", ref configValue, 100))
         {
             Configuration.ListId = configValue;
-            // can save immediately on change, if you don't want to provide a "Save and Close" button
             Configuration.Save();
         }
 
-        var shouldCraft = Configuration.ShouldCraftOnEnter;
-        if (ImGui.Checkbox("Should craft selected list id on entering private house", ref shouldCraft))
+        var shouldCraft = Configuration.ShouldCraftOnAutoGatherChanged;
+        if (ImGui.Checkbox("Should craft selected list id on disabling Autogather", ref shouldCraft))
         {
-            Configuration.ShouldCraftOnEnter = shouldCraft;
+            Configuration.ShouldCraftOnAutoGatherChanged = shouldCraft;
             Configuration.Save();
         }
     }

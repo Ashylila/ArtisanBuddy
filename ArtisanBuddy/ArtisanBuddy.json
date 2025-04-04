@@ -1,12 +1,23 @@
 {
   "Author": "Ashylila",
   "Name": "ArtisanBuddy",
+    "InternalName": "ArtisanBuddy",
   "Punchline": "Artisan Things",
   "Description": "Artisan Things",
   "ApplicableVersion": "any",
   "Tags": [
-    "sample",
-    "plugin",
-    "goats"
-  ]
+    "Artisan",
+    "Gatherbuddy",
+    "Automation"
+  ],
+    "AssemblyVersion": "0.1",
+    "TestingAssemblyVersion": "0.1",
+    "RepoUrl": "https://github.com/Ashylila/ArtisanBuddy",
+    "ApplicableVersion": "any",
+    "DalamudApiLevel": 12,
+    "TestingDalamudApiLevel": 12,
+    "IsHide": "False",
+    "IsTestingExclusive": "False",
+    "DownloadCount": 0,
+    "LastUpdate": 0
 }

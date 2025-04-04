@@ -12,7 +12,7 @@ public class Configuration : IPluginConfiguration
     public bool IsConfigWindowMovable { get; set; } = true;
     public bool SomePropertyToBeSavedAndWithADefault { get; set; } = true;
     public int ListId { get; set; } = 0;
-    public bool ShouldCraftOnEnter { get; set; } = false;
+    public bool ShouldCraftOnAutoGatherChanged { get; set; } = false;
 
     // the below exist just to make saving less cumbersome
     public void Save()

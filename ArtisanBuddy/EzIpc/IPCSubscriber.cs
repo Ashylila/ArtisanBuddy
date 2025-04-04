@@ -1,12 +1,14 @@
 ﻿using System;
+using System.Threading.Tasks;
 using ECommons.EzIpcManager;
 using ECommons.Reflection;
 
 namespace ArtisanBuddy.EzIpc;
 #nullable disable
 #pragma warning disable CS0649
-public class GatherbuddyReborn_IPCSubscriber
+public static class GatherbuddyReborn_IPCSubscriber
 {
+    public static event Action<bool> OnAutoGatherStatusChanged;
     private static readonly EzIPCDisposalToken[] _disposalTokens = EzIPC.Init(typeof(GatherbuddyReborn_IPCSubscriber),"GatherBuddyReborn");
 
     [EzIPC]
@@ -15,7 +17,13 @@ public class GatherbuddyReborn_IPCSubscriber
     internal static readonly Action<bool> SetAutoGatherEnabled;
     [EzIPC]
     internal static readonly Func<bool> IsAutoGatherWaiting;
-    
+
+    [EzIPCEvent]
+    public static void AutoGatherEnabledChanged(bool enabled)
+    {
+        OnAutoGatherStatusChanged.Invoke(enabled);
+    }
+
     internal static bool IsEnabled => IPCSubscriber_Common.IsReady("GatherbuddyReborn");
 
     internal static void Dispose()

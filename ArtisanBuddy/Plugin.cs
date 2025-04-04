@@ -20,13 +20,13 @@ public sealed class Plugin : IDalamudPlugin
     [PluginService] internal static IDataManager DataManager { get; private set; } = null!;
     [PluginService] internal static IPluginLog Log { get; private set; } = null!;
 
-    private const string CommandName = "/pmycommand";
+    private const string CommandName = "/artisanbuddy";
 
     public Configuration Configuration { get; init; }
 
-    public readonly WindowSystem WindowSystem = new("SamplePlugin");
+    public readonly WindowSystem WindowSystem = new("ArtisanBuddy");
     private ConfigWindow ConfigWindow { get; init; }
-    private TerritoryHandler TerritoryHandler;
+    private CraftingHandler craftingHandler;
     private MainWindow MainWindow { get; init; }
 
     public Plugin()
@@ -34,34 +34,26 @@ public sealed class Plugin : IDalamudPlugin
         ECommonsMain.Init(PluginInterface, this, Module.DalamudReflector);
         Configuration = PluginInterface.GetPluginConfig() as Configuration ?? new Configuration();
         Svc.Init(PluginInterface);
-        // you might normally want to embed resources and load them from the manifest stream
-        var goatImagePath = Path.Combine(PluginInterface.AssemblyLocation.Directory?.FullName!, "goat.png");
 
         ConfigWindow = new ConfigWindow(this);
-        MainWindow = new MainWindow(this, goatImagePath);
+        MainWindow = new MainWindow(this);
 
         WindowSystem.AddWindow(ConfigWindow);
         WindowSystem.AddWindow(MainWindow);
 
-        TerritoryHandler = new TerritoryHandler(this);
+        craftingHandler = new CraftingHandler(this);
 
         CommandManager.AddHandler(CommandName, new CommandInfo(OnCommand)
         {
-            HelpMessage = "A useful message to display in /xlhelp"
+            HelpMessage = "Artisan Buddy command. Use /artisanbuddy to toggle the config window."
         });
 
         PluginInterface.UiBuilder.Draw += DrawUI;
-
-        // This adds a button to the plugin installer entry of this plugin which allows
-        // to toggle the display status of the configuration ui
+        
         PluginInterface.UiBuilder.OpenConfigUi += ToggleConfigUI;
-
-        // Adds another button that is doing the same but for the main ui of the plugin
+        
         PluginInterface.UiBuilder.OpenMainUi += ToggleMainUI;
-
-        // Add a simple message to the log with level set to information
-        // Use /xllog to open the log window in-game
-        // Example Output: 00:57:54.959 | INF | [SamplePlugin] ===A cool log message from Sample Plugin===
+        
     }
 
     public void Dispose()
@@ -77,8 +69,15 @@ public sealed class Plugin : IDalamudPlugin
 
     private void OnCommand(string command, string args)
     {
-        // in response to the slash command, just toggle the display status of our main ui
-        ToggleMainUI();
+        switch (args)
+        {
+            case "toggle":
+                Configuration.ShouldCraftOnAutoGatherChanged = !Configuration.ShouldCraftOnAutoGatherChanged;
+                break;
+            default:
+                ToggleConfigUI();
+                break;
+        }
     }
 
     private void DrawUI() => WindowSystem.Draw();
