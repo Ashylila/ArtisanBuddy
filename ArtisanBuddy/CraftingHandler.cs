@@ -5,6 +5,7 @@ using Lumina.Excel.Sheets;
 using ArtisanBuddy;
 using ArtisanBuddy.EzIpc;
 using ArtisanBuddy.Utility;
+using Dalamud.Game.ClientState.Conditions;
 using ECommons.ExcelServices;
 using ECommons.GameHelpers;
 
@@ -66,7 +67,8 @@ public class CraftingHandler
     
     private async Task TeleportToSafeArea()
     {
-            if (TeleportHelper.TryFindAetheryteByName("kugane", out var info, out var aetherName))
+        var nearestAetheryte = Svc.Data.GetExcelSheet<Aetheryte>().FirstOrDefault(a => a.Territory.RowId == Player.Territory).PlaceName.Value.Name.ExtractText();
+            if (TeleportHelper.TryFindAetheryteByName(nearestAetheryte, out var info, out var aetherName))
             {
                 TeleportHelper.Teleport(info.AetheryteId, info.SubIndex);
                 Svc.Log.Debug($"Teleporting to {aetherName}...");
@@ -78,7 +80,7 @@ public class CraftingHandler
             }
             else
             {
-                Svc.Log.Debug("Failed to find teleport location.");
+                Svc.Log.Error("Failed to find teleport location.");
             }
     }
 
@@ -87,19 +89,20 @@ public class CraftingHandler
         int timeoutMs = 20000;
         int elapsedTime = 0;
         int checkInterval = 500;
-        var previousTerritory = Player.Territory;
+        var currentLocation = Svc.Framework.Run( ()=> Svc.ClientState.LocalPlayer.Position);
         while (elapsedTime < timeoutMs)
         {
             await Task.Delay(checkInterval);
             elapsedTime += checkInterval;
-
-            if (previousTerritory != Player.Territory)
+            Svc.Log.Verbose($"Waiting for teleport to complete.");
+            if (Svc.Framework.Run(()=> Svc.ClientState.LocalPlayer.Position).Result != currentLocation.Result)
             {
+                Svc.Log.Verbose("teleportation completed.");
                 return;
             }
 
         }
 
-        Svc.Log.Debug("Teleportation timeout reached.");
+        Svc.Log.Error("Teleportation timeout reached.");
     }
 }
