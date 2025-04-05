@@ -6,18 +6,30 @@ using ArtisanBuddy;
 using ArtisanBuddy.EzIpc;
 using ArtisanBuddy.Utility;
 using Dalamud.Game.ClientState.Conditions;
+using ECommons;
+using ECommons.Automation.NeoTaskManager;
 using ECommons.ExcelServices;
 using ECommons.GameHelpers;
+using FFXIVClientStructs.FFXIV.Client.UI;
+using CollectablesShop = FFXIVClientStructs.FFXIV.Client.Game.UI.CollectablesShop;
 
 namespace ArtisanBuddy;
 
-public class CraftingHandler
+public class CraftingHandler : IDisposable
 {
+    
+    private TaskManager _taskManager;
     private Configuration configuration;
     public CraftingHandler(Plugin plugin)
     {
+        _taskManager = new TaskManager();
         this.configuration = plugin.Configuration;
         GatherbuddyReborn_IPCSubscriber.OnAutoGatherStatusChanged += OnAutoGatherStatusChanged;
+    }
+    public void Dispose()
+    {
+        GatherbuddyReborn_IPCSubscriber.OnAutoGatherStatusChanged -= OnAutoGatherStatusChanged;
+        _taskManager.Dispose();
     }
     private void OnAutoGatherStatusChanged(bool isEnabled)
     {
@@ -27,14 +39,13 @@ public class CraftingHandler
             ShouldStartCrafting();
         }
         
-        
     }
 
     public void ShouldStartCrafting()
     {
         if(configuration.ShouldCraftOnAutoGatherChanged && !GatherbuddyReborn_IPCSubscriber.IsAutoGatherEnabled())
         {
-             StartCrafting();
+             _taskManager.Enqueue(StartCrafting);
         }
     }
         
@@ -46,11 +57,14 @@ public class CraftingHandler
             if (Player.TerritoryIntendedUse == TerritoryIntendedUseEnum.Open_World &&
                 Player.Available)
             {
-                _ = TeleportToSafeArea();
+                _taskManager.Enqueue(TeleportToSafeArea);
+                _taskManager.EnqueueDelay(7000);
+                _taskManager.Enqueue(()=>Variables.CanAct);
+                _taskManager.Enqueue(Invoke);
             }
             else if(Player.Available)
             {
-                Invoke();
+                _taskManager.Enqueue(Invoke);
             }else
             {
                 Svc.Log.Debug("Player is not available for crafting.");
@@ -65,18 +79,13 @@ public class CraftingHandler
         Svc.Log.Debug("Artisan.Invoke");
     }
     
-    private async Task TeleportToSafeArea()
+    private void TeleportToSafeArea()
     {
         var nearestAetheryte = Svc.Data.GetExcelSheet<Aetheryte>().FirstOrDefault(a => a.Territory.RowId == Player.Territory).PlaceName.Value.Name.ExtractText();
             if (TeleportHelper.TryFindAetheryteByName(nearestAetheryte, out var info, out var aetherName))
             {
                 TeleportHelper.Teleport(info.AetheryteId, info.SubIndex);
                 Svc.Log.Debug($"Teleporting to {aetherName}...");
-
-                // Wait until teleport is complete
-                await WaitForTeleportCompletion();
-                Invoke();
-                Svc.Log.Debug("Teleport completed!");
             }
             else
             {
@@ -84,25 +93,4 @@ public class CraftingHandler
             }
     }
 
-    private async Task WaitForTeleportCompletion()
-    {
-        int timeoutMs = 20000;
-        int elapsedTime = 0;
-        int checkInterval = 500;
-        var currentLocation = Svc.Framework.Run( ()=> Svc.ClientState.LocalPlayer.Position);
-        while (elapsedTime < timeoutMs)
-        {
-            await Task.Delay(checkInterval);
-            elapsedTime += checkInterval;
-            Svc.Log.Verbose($"Waiting for teleport to complete.");
-            if (Svc.Framework.Run(()=> Svc.ClientState.LocalPlayer.Position).Result != currentLocation.Result)
-            {
-                Svc.Log.Verbose("teleportation completed.");
-                return;
-            }
-
-        }
-
-        Svc.Log.Error("Teleportation timeout reached.");
-    }
 }
