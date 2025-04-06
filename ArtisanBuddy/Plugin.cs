@@ -58,6 +58,7 @@ public sealed class Plugin : IDalamudPlugin
 
     public void Dispose()
     {
+        craftingHandler.Dispose();
         ECommonsMain.Dispose();
         WindowSystem.RemoveAllWindows();
 

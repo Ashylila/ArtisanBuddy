@@ -18,18 +18,18 @@ namespace ArtisanBuddy;
 public class CraftingHandler : IDisposable
 {
     
-    private TaskManager _taskManager;
+    private TaskManager TaskManager { get; }
     private Configuration configuration;
     public CraftingHandler(Plugin plugin)
     {
-        _taskManager = new TaskManager();
+        TaskManager = new TaskManager();
         this.configuration = plugin.Configuration;
         GatherbuddyReborn_IPCSubscriber.OnAutoGatherStatusChanged += OnAutoGatherStatusChanged;
     }
     public void Dispose()
     {
         GatherbuddyReborn_IPCSubscriber.OnAutoGatherStatusChanged -= OnAutoGatherStatusChanged;
-        _taskManager.Dispose();
+        TaskManager.Dispose();
     }
     private void OnAutoGatherStatusChanged(bool isEnabled)
     {
@@ -45,7 +45,7 @@ public class CraftingHandler : IDisposable
     {
         if(configuration.ShouldCraftOnAutoGatherChanged && !GatherbuddyReborn_IPCSubscriber.IsAutoGatherEnabled())
         {
-             _taskManager.Enqueue(StartCrafting);
+             TaskManager.Enqueue(StartCrafting);
         }
     }
         
@@ -57,14 +57,14 @@ public class CraftingHandler : IDisposable
             if (Player.TerritoryIntendedUse == TerritoryIntendedUseEnum.Open_World &&
                 Player.Available)
             {
-                _taskManager.Enqueue(TeleportToSafeArea);
-                _taskManager.EnqueueDelay(7000);
-                _taskManager.Enqueue(()=>Variables.CanAct);
-                _taskManager.Enqueue(Invoke);
+                TaskManager.Enqueue(TeleportToSafeArea);
+                TaskManager.EnqueueDelay(7000);
+                TaskManager.Enqueue(()=>Variables.CanAct);
+                TaskManager.Enqueue(Invoke);
             }
             else if(Player.Available)
             {
-                _taskManager.Enqueue(Invoke);
+                TaskManager.Enqueue(Invoke);
             }else
             {
                 Svc.Log.Debug("Player is not available for crafting.");
