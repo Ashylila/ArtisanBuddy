@@ -1,4 +1,5 @@
-﻿using Dalamud.Game.Command;
+﻿using System;
+using Dalamud.Game.Command;
 using Dalamud.IoC;
 using Dalamud.Plugin;
 using System.IO;
@@ -8,6 +9,7 @@ using ECommons;
 using ArtisanBuddy;
 using ArtisanBuddy.EzIpc;
 using ArtisanBuddy.Windows;
+using ArtisanBuddy.Services;
 
 namespace ArtisanBuddy;
 
@@ -26,22 +28,20 @@ public sealed class Plugin : IDalamudPlugin
 
     public readonly WindowSystem WindowSystem = new("ArtisanBuddy");
     private ConfigWindow ConfigWindow { get; init; }
-    private CraftingHandler craftingHandler;
     private MainWindow MainWindow { get; init; }
 
     public Plugin()
     {
         ECommonsMain.Init(PluginInterface, this, Module.DalamudReflector);
         Configuration = PluginInterface.GetPluginConfig() as Configuration ?? new Configuration();
-        Svc.Init(PluginInterface);
-
-        ConfigWindow = new ConfigWindow(this);
-        MainWindow = new MainWindow(this);
+        ServiceWrapper.Init(PluginInterface, this);
+        
+        ConfigWindow = ServiceWrapper.Get<ConfigWindow>();
+        MainWindow = ServiceWrapper.Get<MainWindow>();
 
         WindowSystem.AddWindow(ConfigWindow);
         WindowSystem.AddWindow(MainWindow);
-
-        craftingHandler = new CraftingHandler(this);
+        
 
         CommandManager.AddHandler(CommandName, new CommandInfo(OnCommand)
         {
@@ -58,7 +58,10 @@ public sealed class Plugin : IDalamudPlugin
 
     public void Dispose()
     {
-        craftingHandler.Dispose();
+        if (ServiceWrapper.ServiceProvider is IDisposable disposable)
+        {
+            disposable.Dispose();
+        }
         ECommonsMain.Dispose();
         WindowSystem.RemoveAllWindows();
 

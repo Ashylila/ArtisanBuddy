@@ -7,27 +7,27 @@ namespace ArtisanBuddy.Windows;
 
 public class ConfigWindow : Window, IDisposable
 {
-    private Configuration Configuration;
+    private Configuration _configuration;
 
     // We give this window a constant ID using ###
     // This allows for labels being dynamic, like "{FPS Counter}fps###XYZ counter window",
     // and the window ID will always be "###XYZ counter window" for ImGui
-    public ConfigWindow(Plugin plugin) : base("A Wonderful Configuration Window###With a constant ID")
+    public ConfigWindow(Configuration config) : base("A Wonderful Configuration Window###With a constant ID")
     {
+        _configuration = config;
         Flags = ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoCollapse | ImGuiWindowFlags.NoScrollbar |
                 ImGuiWindowFlags.NoScrollWithMouse;
 
         Size = new Vector2(500, 150);
         SizeCondition = ImGuiCond.Always;
-
-        Configuration = plugin.Configuration;
+        
     }
 
     public void Dispose() { }
 
     public override void PreDraw()
     {
-        if (Configuration.IsConfigWindowMovable)
+        if (_configuration.IsConfigWindowMovable)
         {
             Flags &= ~ImGuiWindowFlags.NoMove;
         }
@@ -39,19 +39,19 @@ public class ConfigWindow : Window, IDisposable
 
     public override void Draw()
     {
-        var configValue = Configuration.ListId;
+        var configValue = _configuration.ListId;
         ImGui.Text("Artisan List ID:");
         if (ImGui.InputInt("##ArtisanListID", ref configValue, 100))
         {
-            Configuration.ListId = configValue;
-            Configuration.Save();
+            _configuration.ListId = configValue;
+            _configuration.Save();
         }
 
-        var shouldCraft = Configuration.ShouldCraftOnAutoGatherChanged;
+        var shouldCraft = _configuration.ShouldCraftOnAutoGatherChanged;
         if (ImGui.Checkbox("Should craft selected list id on disabling Autogather", ref shouldCraft))
         {
-            Configuration.ShouldCraftOnAutoGatherChanged = shouldCraft;
-            Configuration.Save();
+            _configuration.ShouldCraftOnAutoGatherChanged = shouldCraft;
+            _configuration.Save();
         }
     }
 }

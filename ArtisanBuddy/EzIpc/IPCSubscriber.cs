@@ -9,7 +9,12 @@ namespace ArtisanBuddy.EzIpc;
 public static class GatherbuddyReborn_IPCSubscriber
 {
     public static event Action<bool> OnAutoGatherStatusChanged;
-    private static readonly EzIPCDisposalToken[] _disposalTokens = EzIPC.Init(typeof(GatherbuddyReborn_IPCSubscriber),"GatherBuddyReborn");
+    private static readonly EzIPCDisposalToken[] _disposalTokens;
+    static GatherbuddyReborn_IPCSubscriber()
+    {
+        _disposalTokens = EzIPC.Init(typeof(GatherbuddyReborn_IPCSubscriber),"GatherBuddyReborn");
+    }
+
 
     [EzIPC]
     internal static readonly Func<bool> IsAutoGatherEnabled;

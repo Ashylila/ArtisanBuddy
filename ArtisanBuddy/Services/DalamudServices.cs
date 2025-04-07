@@ -9,7 +9,6 @@ namespace ArtisanBuddy;
 
 public class Svc
 {
-    internal static bool IsInitialized;
 
     [PluginService]
     public static IDalamudPluginInterface PluginInterface { get; private set; }
@@ -124,8 +123,6 @@ public class Svc
 
     public static void Init(IDalamudPluginInterface pi)
     {
-        IsInitialized = true;
-
         pi.Create<Svc>();
     }
 }
