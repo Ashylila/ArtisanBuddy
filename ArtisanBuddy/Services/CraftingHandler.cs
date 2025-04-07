@@ -22,7 +22,7 @@ public class CraftingHandler : IDisposable
 
     private readonly TaskManager _taskManager;
     private readonly Configuration _configuration;
-    //private readonly GatherBuddyService _gatherbuddyService;
+    private readonly GatherBuddyService _gatherbuddyService;
     private readonly IChatGui _chat;
     private readonly IPluginLog _log;
     private readonly IDataManager _data;
@@ -36,7 +36,8 @@ public class CraftingHandler : IDisposable
                            IPluginLog log,
                            IDataManager data,
                            TaskManager taskManager,
-                           Chat chatSender)
+                           Chat chatSender,
+                           GatherBuddyService gatherBuddyService)
     {
         _taskManager = taskManager;
         _configuration = configuration;
@@ -44,16 +45,17 @@ public class CraftingHandler : IDisposable
         _log = log;
         _data = data;
         _chatSender = chatSender;
+        _gatherbuddyService = gatherBuddyService;
     }
 
     public void Init()
     {
-        isOn = GatherbuddyReborn_IPCSubscriber.IsAutoGatherEnabled();
-        GatherbuddyReborn_IPCSubscriber.OnAutoGatherStatusChanged += OnAutoGatherStatusChanged;
+        isOn = _gatherbuddyService.IsAutoGatherEnabled;
+        _gatherbuddyService.OnAutoGatherStatusChanged += OnAutoGatherStatusChanged;
     }
     public void Dispose()
     {
-        GatherbuddyReborn_IPCSubscriber.OnAutoGatherStatusChanged -= OnAutoGatherStatusChanged;
+        _gatherbuddyService.OnAutoGatherStatusChanged -= OnAutoGatherStatusChanged;
         _taskManager.Dispose();
     }
     private void OnAutoGatherStatusChanged(bool isEnabled)
