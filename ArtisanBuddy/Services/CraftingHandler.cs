@@ -12,6 +12,7 @@ using ECommons;
 using ECommons.Automation.NeoTaskManager;
 using ECommons.ExcelServices;
 using ECommons.GameHelpers;
+using FFXIVClientStructs.FFXIV.Client.Game;
 using FFXIVClientStructs.FFXIV.Client.UI;
 using CollectablesShop = FFXIVClientStructs.FFXIV.Client.Game.UI.CollectablesShop;
 
@@ -27,6 +28,7 @@ public class CraftingHandler : IDisposable
     private readonly IPluginLog _log;
     private readonly IDataManager _data;
     private readonly Chat _chatSender;
+    private readonly ICondition _condition;
     private bool isOn = false;
     
     
@@ -37,7 +39,8 @@ public class CraftingHandler : IDisposable
                            IDataManager data,
                            TaskManager taskManager,
                            Chat chatSender,
-                           GatherBuddyService gatherBuddyService)
+                           GatherBuddyService gatherBuddyService,
+                           ICondition condition)
     {
         _taskManager = taskManager;
         _configuration = configuration;
@@ -46,6 +49,7 @@ public class CraftingHandler : IDisposable
         _data = data;
         _chatSender = chatSender;
         _gatherbuddyService = gatherBuddyService;
+        _condition = condition;
     }
 
     public void Init()
@@ -87,6 +91,7 @@ public class CraftingHandler : IDisposable
                 _taskManager.Enqueue(TeleportToSafeArea);
                 _taskManager.EnqueueDelay(7000);
                 _taskManager.Enqueue(()=>Variables.CanAct);
+                _taskManager.Enqueue(MountCheck);
                 _taskManager.Enqueue(Invoke);
             }
             else if(Player.Available)
@@ -98,6 +103,15 @@ public class CraftingHandler : IDisposable
             }
         
 
+    }
+
+    private unsafe void MountCheck()
+    {
+        if (_condition[ConditionFlag.Mounted] || _condition[ConditionFlag.Mounted2])
+        {
+            var am = ActionManager.Instance();
+            am->UseAction(ActionType.Mount, 0);
+        }
     }
 
     public void Invoke()
