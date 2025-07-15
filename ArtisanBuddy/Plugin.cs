@@ -54,6 +54,7 @@ public sealed class Plugin : IDalamudPlugin
         
         PluginInterface.UiBuilder.OpenMainUi += ToggleMainUI;
         
+        ServiceWrapper.Get<CraftingHandler>().Init();
     }
 
     public void Dispose()

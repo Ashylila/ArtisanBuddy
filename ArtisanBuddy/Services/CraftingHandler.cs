@@ -23,7 +23,7 @@ public class CraftingHandler : IDisposable
 
     private readonly TaskManager _taskManager;
     private readonly Configuration _configuration;
-    private readonly GatherBuddyService _gatherbuddyService;
+    private readonly GatherbuddyReborn_IPCSubscriber _gatherbuddyService;
     private readonly IChatGui _chat;
     private readonly IPluginLog _log;
     private readonly IDataManager _data;
@@ -39,7 +39,7 @@ public class CraftingHandler : IDisposable
                            IDataManager data,
                            TaskManager taskManager,
                            Chat chatSender,
-                           GatherBuddyService gatherBuddyService,
+                           GatherbuddyReborn_IPCSubscriber gatherBuddyService,
                            ICondition condition)
     {
         _taskManager = taskManager;
@@ -54,7 +54,6 @@ public class CraftingHandler : IDisposable
 
     public void Init()
     {
-        isOn = _gatherbuddyService.IsAutoGatherEnabled;
         _gatherbuddyService.OnAutoGatherStatusChanged += OnAutoGatherStatusChanged;
     }
     public void Dispose()
@@ -74,14 +73,22 @@ public class CraftingHandler : IDisposable
 
     public void ShouldStartCrafting()
     {
-        if(_configuration.ShouldCraftOnAutoGatherChanged && !GatherbuddyReborn_IPCSubscriber.IsAutoGatherEnabled())
+        if (_configuration.ShouldCraftOnAutoGatherChanged && !_gatherbuddyService.GetIsAutoGatherEnabled())
         {
-             _taskManager.Enqueue(StartCrafting);
+            if (isOn)
+            {
+                _log.Debug("Crafting is already started, skipping.");
+                return;
+            }
+
+            isOn = true;
+            _log.Debug("Crafting is not started, starting now.");
+            {
+                _taskManager.Enqueue(StartCrafting);
+            }
         }
     }
-        
-    
-    
+
     private void StartCrafting()
     {
 

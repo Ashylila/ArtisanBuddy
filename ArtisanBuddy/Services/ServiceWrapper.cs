@@ -1,4 +1,5 @@
 ﻿using System;
+using ArtisanBuddy.EzIpc;
 using ArtisanBuddy.Utility;
 using ArtisanBuddy.Windows;
 using Dalamud.Interface.Windowing;
@@ -45,7 +46,7 @@ public static class ServiceWrapper
         services.AddSingleton<ConfigWindow>();
         services.AddSingleton<MainWindow>();
         
-        services.AddSingleton<GatherBuddyService>();
+        services.AddSingleton<GatherbuddyReborn_IPCSubscriber>();
         services.AddSingleton<TaskManager>();
         services.AddSingleton<CraftingHandler>();
         

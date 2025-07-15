@@ -6,32 +6,32 @@ using ECommons.Reflection;
 namespace ArtisanBuddy.EzIpc;
 #nullable disable
 #pragma warning disable CS0649
-public static class GatherbuddyReborn_IPCSubscriber
+public class GatherbuddyReborn_IPCSubscriber : IDisposable
 {
-    public static event Action<bool> OnAutoGatherStatusChanged;
-    private static readonly EzIPCDisposalToken[] _disposalTokens;
-    static GatherbuddyReborn_IPCSubscriber()
+    [EzIPC] internal Func<bool>? IsAutoGatherEnabled;
+    [EzIPC] internal Action<bool>? SetAutoGatherEnabled;
+    [EzIPC] internal Func<bool>? IsAutoGatherWaiting;
+
+    public event Action<bool>? OnAutoGatherStatusChanged;
+
+    private readonly EzIPCDisposalToken[] _disposalTokens;
+
+    public GatherbuddyReborn_IPCSubscriber()
     {
-        _disposalTokens = EzIPC.Init(typeof(GatherbuddyReborn_IPCSubscriber),"GatherBuddyReborn");
+        _disposalTokens = EzIPC.Init(this, "GatherBuddyReborn", SafeWrapper.IPCException);
     }
 
-
-    [EzIPC]
-    internal static readonly Func<bool> IsAutoGatherEnabled;
-    [EzIPC]
-    internal static readonly Action<bool> SetAutoGatherEnabled;
-    [EzIPC]
-    internal static readonly Func<bool> IsAutoGatherWaiting;
+    public bool GetIsAutoGatherEnabled() => IsAutoGatherEnabled?.Invoke() ?? false;
+    public void SetAutoGatherEnabledStatus(bool enabled) => SetAutoGatherEnabled?.Invoke(enabled);
+    public bool GetIsAutoGatherWaiting() => IsAutoGatherWaiting?.Invoke() ?? false;
 
     [EzIPCEvent]
-    public static void AutoGatherEnabledChanged(bool enabled)
+    public void AutoGatherEnabledChanged(bool enabled)
     {
-        OnAutoGatherStatusChanged.Invoke(enabled);
+        OnAutoGatherStatusChanged?.Invoke(enabled);
     }
 
-    internal static bool IsEnabled => IPCSubscriber_Common.IsReady("GatherbuddyReborn");
-
-    internal static void Dispose()
+    public void Dispose()
     {
         IPCSubscriber_Common.DisposeAll(_disposalTokens);
     }
