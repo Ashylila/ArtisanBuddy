@@ -44,9 +44,6 @@ public class Svc
     public static IGameGui GameGui { get; private set; }
 
     [PluginService]
-    public static IGameNetwork GameNetwork { get; private set; }
-
-    [PluginService]
     public static IJobGauges Gauges { get; private set; }
 
     [PluginService]

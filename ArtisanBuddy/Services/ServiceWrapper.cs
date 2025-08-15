@@ -25,7 +25,6 @@ public static class ServiceWrapper
         services.AddSingleton(Svc.Data);
         services.AddSingleton(Svc.Framework);
         services.AddSingleton(Svc.GameGui);
-        services.AddSingleton(Svc.GameNetwork);
         services.AddSingleton(Svc.Objects);
         services.AddSingleton(Svc.Chat);
         services.AddSingleton(Svc.Commands);

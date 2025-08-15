@@ -28,8 +28,8 @@ public class Variables
                 || Svc.Condition[ConditionFlag.Occupied]
                 || Svc.Condition[ConditionFlag.Occupied39]
                 || Svc.Condition[ConditionFlag.Unconscious]
-                || Svc.Condition[ConditionFlag.Gathering42]
-                || Svc.Condition[ConditionFlag.Unknown57] // Mounting up
+                || Svc.Condition[ConditionFlag.ExecutingGatheringAction]
+                || Svc.Condition[ConditionFlag.Mounting] // Mounting up
                 //Node is open? Fades off shortly after closing the node, can't use items (but can mount) while it's set
                 || Svc.Condition[85] && !Svc.Condition[ConditionFlag.Gathering]
                 || Svc.ClientState.LocalPlayer.IsDead

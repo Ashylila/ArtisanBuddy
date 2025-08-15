@@ -114,7 +114,7 @@ public class CraftingHandler : IDisposable
 
     private unsafe void MountCheck()
     {
-        if (_condition[ConditionFlag.Mounted] || _condition[ConditionFlag.Mounted2])
+        if (_condition[ConditionFlag.Mounted] || _condition[ConditionFlag.RidingPillion])
         {
             var am = ActionManager.Instance();
             am->UseAction(ActionType.Mount, 0);
