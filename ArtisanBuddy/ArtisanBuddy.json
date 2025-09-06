@@ -10,8 +10,8 @@
     "Gatherbuddy",
     "Automation"
   ],
-    "AssemblyVersion": "0.15",
-    "TestingAssemblyVersion": "0.15",
+    "AssemblyVersion": "0.16",
+    "TestingAssemblyVersion": "0.16",
     "RepoUrl": "https://github.com/Ashylila/ArtisanBuddy",
     "ApplicableVersion": "any",
     "DalamudApiLevel": 13,
