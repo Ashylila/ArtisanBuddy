@@ -29,7 +29,6 @@ public class CraftingHandler : IDisposable
     private readonly IDataManager _data;
     private readonly Chat _chatSender;
     private readonly ICondition _condition;
-    private bool isOn = false;
     
     
     
@@ -75,17 +74,8 @@ public class CraftingHandler : IDisposable
     {
         if (_configuration.ShouldCraftOnAutoGatherChanged && !_gatherbuddyService.GetIsAutoGatherEnabled())
         {
-            if (isOn)
-            {
-                _log.Debug("Crafting is already started, skipping.");
-                return;
-            }
-
-            isOn = true;
             _log.Debug("Crafting is not started, starting now.");
-            {
-                _taskManager.Enqueue(StartCrafting);
-            }
+            _taskManager.Enqueue(StartCrafting);
         }
     }
 
