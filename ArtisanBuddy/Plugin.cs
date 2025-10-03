@@ -10,6 +10,7 @@ using ArtisanBuddy;
 using ArtisanBuddy.EzIpc;
 using ArtisanBuddy.Windows;
 using ArtisanBuddy.Services;
+using ArtisanBuddy.Utility;
 
 namespace ArtisanBuddy;
 
@@ -29,7 +30,6 @@ public sealed class Plugin : IDalamudPlugin
     public readonly WindowSystem WindowSystem = new("ArtisanBuddy");
     private ConfigWindow ConfigWindow { get; init; }
     private MainWindow MainWindow { get; init; }
-
     public Plugin()
     {
         ECommonsMain.Init(PluginInterface, this, Module.DalamudReflector);
@@ -41,7 +41,6 @@ public sealed class Plugin : IDalamudPlugin
 
         WindowSystem.AddWindow(ConfigWindow);
         WindowSystem.AddWindow(MainWindow);
-        
 
         CommandManager.AddHandler(CommandName, new CommandInfo(OnCommand)
         {
