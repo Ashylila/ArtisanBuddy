@@ -10,6 +10,12 @@
 - ⛏️ Waits for **AutoGather** to finish before starting  
 - 💡 Simple, reliable, and minimal — perfect for full automation loops with **TheCollector**
 
+
+To install
+      add the following repo link:  
+   ```txt
+   https://raw.githubusercontent.com/Ashylila/AshPluggyRepo/refs/heads/main/repo.json
+   ```
 ---
 
 ## 🔗 Links
