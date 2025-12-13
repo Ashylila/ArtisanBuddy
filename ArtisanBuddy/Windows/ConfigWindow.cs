@@ -40,19 +40,6 @@ public class ConfigWindow : Window, IDisposable
 
     public override void Draw()
     {
-        var configValue = _configuration.ListId;
-        ImGui.Text("Artisan List ID:");
-        if (ImGui.InputInt("##ArtisanListID", ref configValue, 100))
-        {
-            _configuration.ListId = configValue;
-            _configuration.Save();
-        }
-
-        var shouldCraft = _configuration.ShouldCraftOnAutoGatherChanged;
-        if (ImGui.Checkbox("Should craft selected list id on disabling Autogather", ref shouldCraft))
-        {
-            _configuration.ShouldCraftOnAutoGatherChanged = shouldCraft;
-            _configuration.Save();
-        }
+        ImGui.TextUnformatted("This plugin is depricated. Please use TheCollector instead.");
     }
 }

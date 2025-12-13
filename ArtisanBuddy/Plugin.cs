@@ -52,9 +52,17 @@ public sealed class Plugin : IDalamudPlugin
         PluginInterface.UiBuilder.OpenConfigUi += ToggleConfigUI;
         
         PluginInterface.UiBuilder.OpenMainUi += ToggleMainUI;
-        
-        ServiceWrapper.Get<CraftingHandler>().Init();
+        Svc.ClientState.Login +=  OnLogin;
     }
+
+    public void OnLogin()
+    {
+        Svc.Framework.Run(() =>
+        {
+            Svc.Chat.Print("This plugin is depricated. Please use TheCollector instead.", "ArtisanBuddy");
+        });
+    }
+    
 
     public void Dispose()
     {
